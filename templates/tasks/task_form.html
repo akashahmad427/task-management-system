@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if form.instance.pk %}Edit Task{% else %}Create New Task{% endif %} - Task Management System
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-light border-0">
+                    <h4 class="mb-0">
+                        <i class="fas fa-{% if form.instance.pk %}edit{% else %}plus{% endif %} text-primary me-2"></i>
+                        {% if form.instance.pk %}Edit Task{% else %}Create New Task{% endif %}
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Please correct the errors below.
+                            </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="{{ form.title.id_for_label }}" class="form-label">
+                                    <i class="fas fa-heading me-1"></i>Task Title *
+                                </label>
+                                <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" 
+                                       class="form-control {% if form.title.errors %}is-invalid{% endif %}" 
+                                       value="{{ form.title.value|default:'' }}" required>
+                                {% if form.title.errors %}
+                                    <div class="invalid-feedback">{{ form.title.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.category.id_for_label }}" class="form-label">
+                                    <i class="fas fa-tags me-1"></i>Category *
+                                </label>
+                                <select name="{{ form.category.name }}" id="{{ form.category.id_for_label }}" 
+                                        class="form-select {% if form.category.errors %}is-invalid{% endif %}" required>
+                                    <option value="">Select Category</option>
+                                    {% for choice in form.category.field.choices %}
+                                        <option value="{{ choice.0 }}" {% if form.category.value == choice.0 %}selected{% endif %}>
+                                            {{ choice.1 }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.category.errors %}
+                                    <div class="invalid-feedback">{{ form.category.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                <i class="fas fa-align-left me-1"></i>Description *
+                            </label>
+                            <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}" 
+                                      class="form-control {% if form.description.errors %}is-invalid{% endif %}" 
+                                      rows="4" required>{{ form.description.value|default:'' }}</textarea>
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.priority.id_for_label }}" class="form-label">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>Priority *
+                                </label>
+                                <select name="{{ form.priority.name }}" id="{{ form.priority.id_for_label }}" 
+                                        class="form-select {% if form.priority.errors %}is-invalid{% endif %}" required>
+                                    {% for choice in form.priority.field.choices %}
+                                        <option value="{{ choice.0 }}" {% if form.priority.value == choice.0 %}selected{% endif %}>
+                                            {{ choice.1 }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.priority.errors %}
+                                    <div class="invalid-feedback">{{ form.priority.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            {% if form.status %}
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">
+                                    <i class="fas fa-info-circle me-1"></i>Status
+                                </label>
+                                <select name="{{ form.status.name }}" id="{{ form.status.id_for_label }}" 
+                                        class="form-select {% if form.status.errors %}is-invalid{% endif %}">
+                                    {% for choice in form.status.field.choices %}
+                                        <option value="{{ choice.0 }}" {% if form.status.value == choice.0 %}selected{% endif %}>
+                                            {{ choice.1 }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.status.errors %}
+                                    <div class="invalid-feedback">{{ form.status.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.assigned_to.id_for_label }}" class="form-label">
+                                    <i class="fas fa-user me-1"></i>Assign To
+                                </label>
+                                <select name="{{ form.assigned_to.name }}" id="{{ form.assigned_to.id_for_label }}" 
+                                        class="form-select {% if form.assigned_to.errors %}is-invalid{% endif %}">
+                                    <option value="">Unassigned</option>
+                                    {% for choice in form.assigned_to.field.choices %}
+                                        <option value="{{ choice.0 }}" {% if form.assigned_to.value == choice.0 %}selected{% endif %}>
+                                            {{ choice.1 }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.assigned_to.errors %}
+                                    <div class="invalid-feedback">{{ form.assigned_to.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.due_date.id_for_label }}" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i>Due Date
+                                </label>
+                                <input type="datetime-local" name="{{ form.due_date.name }}" id="{{ form.due_date.id_for_label }}" 
+                                       class="form-control {% if form.due_date.errors %}is-invalid{% endif %}" 
+                                       value="{{ form.due_date.value|date:'Y-m-d\TH:i'|default:'' }}">
+                                {% if form.due_date.errors %}
+                                    <div class="invalid-feedback">{{ form.due_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label for="{{ form.estimated_hours.id_for_label }}" class="form-label">
+                                    <i class="fas fa-clock me-1"></i>Estimated Hours
+                                </label>
+                                <input type="number" name="{{ form.estimated_hours.name }}" id="{{ form.estimated_hours.id_for_label }}" 
+                                       class="form-control {% if form.estimated_hours.errors %}is-invalid{% endif %}" 
+                                       value="{{ form.estimated_hours.value|default:'' }}" 
+                                       min="0" step="0.5" placeholder="0.0">
+                                {% if form.estimated_hours.errors %}
+                                    <div class="invalid-feedback">{{ form.estimated_hours.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            {% if form.actual_hours %}
+                            <div class="col-md-3 mb-3">
+                                <label for="{{ form.actual_hours.id_for_label }}" class="form-label">
+                                    <i class="fas fa-stopwatch me-1"></i>Actual Hours
+                                </label>
+                                <input type="number" name="{{ form.actual_hours.name }}" id="{{ form.actual_hours.id_for_label }}" 
+                                       class="form-control {% if form.actual_hours.errors %}is-invalid{% endif %}" 
+                                       value="{{ form.actual_hours.value|default:'' }}" 
+                                       min="0" step="0.5" placeholder="0.0">
+                                {% if form.actual_hours.errors %}
+                                    <div class="invalid-feedback">{{ form.actual_hours.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.tags.id_for_label }}" class="form-label">
+                                <i class="fas fa-tags me-1"></i>Tags
+                            </label>
+                            <input type="text" name="{{ form.tags.name }}" id="{{ form.tags.id_for_label }}" 
+                                   class="form-control {% if form.tags.errors %}is-invalid{% endif %}" 
+                                   value="{{ form.tags.value|default:'' }}" 
+                                   placeholder="Enter tags separated by commas">
+                            {% if form.tags.errors %}
+                                <div class="invalid-feedback">{{ form.tags.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-text">Separate multiple tags with commas (e.g., frontend, bug, urgent)</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'tasks:task-list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-{% if form.instance.pk %}save{% else %}plus{% endif %} me-2"></i>
+                                {% if form.instance.pk %}Update Task{% else %}Create Task{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    var form = document.querySelector('.needs-validation');
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+
+    // Hours validation
+    var estimatedHours = document.getElementById('{{ form.estimated_hours.id_for_label }}');
+    var actualHours = document.getElementById('{{ form.actual_hours.id_for_label }}');
+    
+    if (estimatedHours && actualHours) {
+        estimatedHours.addEventListener('input', function() {
+            validateHours(this, actualHours);
+        });
+        
+        actualHours.addEventListener('input', function() {
+            validateHours(actualHours, estimatedHours);
+        });
+    }
+
+    // Due date validation
+    var dueDate = document.getElementById('{{ form.due_date.id_for_label }}');
+    if (dueDate) {
+        dueDate.addEventListener('change', function() {
+            var selectedDate = new Date(this.value);
+            var now = new Date();
+            
+            if (selectedDate < now) {
+                this.setCustomValidity('Due date cannot be in the past');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    }
+});
+
+function validateHours(input, compareInput) {
+    var value = parseFloat(input.value);
+    var compareValue = parseFloat(compareInput.value);
+    
+    if (value < 0) {
+        input.setCustomValidity('Hours cannot be negative');
+    } else if (compareInput.value && value > compareValue) {
+        input.setCustomValidity('Actual hours cannot exceed estimated hours');
+    } else {
+        input.setCustomValidity('');
+    }
+}
+</script>
+{% endblock %} 

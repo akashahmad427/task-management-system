@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile - {{ user.get_full_name|default:user.username }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <!-- Profile Information -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body text-center">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 120px; height: 120px;">
+                            <i class="fas fa-user fa-3x text-primary"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <h4 class="mb-1">{{ user.get_full_name|default:user.username }}</h4>
+                    <p class="text-muted mb-2">@{{ user.username }}</p>
+                    
+                    <span class="badge bg-primary mb-3">{{ user.get_role_display }}</span>
+                    
+                    <div class="d-grid">
+                        <a href="{% url 'users:profile-update' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-edit me-2"></i>Edit Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light border-0">
+                    <h6 class="mb-0">
+                        <i class="fas fa-address-card text-primary me-2"></i>Contact Information
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Email</small>
+                        <strong>{{ user.email }}</strong>
+                    </div>
+                    
+                    {% if user.phone %}
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Phone</small>
+                        <strong>{{ user.phone }}</strong>
+                    </div>
+                    {% endif %}
+                    
+                    {% if user.department %}
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Department</small>
+                        <strong>{{ user.department }}</strong>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-0">
+                        <small class="text-muted d-block">Member Since</small>
+                        <strong>{{ user.date_joined|date:"M d, Y" }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- User Statistics -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar text-primary me-2"></i>Task Statistics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="text-center">
+                                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-tasks text-primary fa-2x"></i>
+                                </div>
+                                <h4 class="mb-1 text-primary">{{ user.created_tasks.count }}</h4>
+                                <small class="text-muted">Created Tasks</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="text-center">
+                                <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-user-check text-warning fa-2x"></i>
+                                </div>
+                                <h4 class="mb-1 text-warning">{{ user.assigned_tasks.count }}</h4>
+                                <small class="text-muted">Assigned Tasks</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="text-center">
+                                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-check-circle text-success fa-2x"></i>
+                                </div>
+                                <h4 class="mb-1 text-success">{{ user.assigned_tasks.filter.status='completed'|length }}</h4>
+                                <small class="text-muted">Completed</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="text-center">
+                                <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-clock text-info fa-2x"></i>
+                                </div>
+                                <h4 class="mb-1 text-info">{{ user.assigned_tasks.filter.status='pending'|length }}</h4>
+                                <small class="text-muted">Pending</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history text-secondary me-2"></i>Recent Activity
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        {% for task in user.created_tasks.all|slice:":5" %}
+                        <div class="timeline-item d-flex mb-3">
+                            <div class="timeline-marker bg-primary rounded-circle me-3" style="width: 12px; height: 12px; margin-top: 6px;"></div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Created task "{{ task.title }}"</h6>
+                                <small class="text-muted">{{ task.created_at|date:"M d, Y H:i" }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        {% if user.created_tasks.count == 0 %}
+                        <p class="text-muted text-center py-3">No recent activity</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Role Information -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shield-alt text-warning me-2"></i>Role & Permissions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-3">Your Role</h6>
+                            <p class="mb-3">
+                                <strong>{{ user.get_role_display }}</strong><br>
+                                <small class="text-muted">
+                                    {% if user.is_admin %}
+                                        You have full access to all features and can manage users and system settings.
+                                    {% elif user.is_manager %}
+                                        You can create, assign, and manage tasks for your team members.
+                                    {% else %}
+                                        You can view and update tasks assigned to you.
+                                    {% endif %}
+                                </small>
+                            </p>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-3">Permissions</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-{% if user.can_manage_tasks %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
+                                    Manage Tasks
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-{% if user.can_assign_tasks %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
+                                    Assign Tasks
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-{% if user.can_delete_tasks %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
+                                    Delete Tasks
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-{% if user.is_admin %}check text-success{% else %}times text-muted{% endif %} me-2"></i>
+                                    User Management
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

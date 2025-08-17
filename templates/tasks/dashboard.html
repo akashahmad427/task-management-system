@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Task Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h2 mb-0">
+                <i class="fas fa-tachometer-alt text-primary me-2"></i>Dashboard
+            </h1>
+            <p class="text-muted">Welcome back, {{ user.get_full_name|default:user.username }}!</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                                <i class="fas fa-tasks text-primary fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="card-title text-muted mb-1">Total Tasks</h6>
+                            <h2 class="mb-0 fw-bold text-primary">{{ total_tasks }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                                <i class="fas fa-clock text-warning fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="card-title text-muted mb-1">Pending</h6>
+                            <h2 class="mb-0 fw-bold text-warning">{{ pending_tasks }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-info bg-opacity-10 rounded-circle p-3">
+                                <i class="fas fa-spinner text-info fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="card-title text-muted mb-1">In Progress</h6>
+                            <h2 class="mb-0 fw-bold text-info">{{ in_progress_tasks }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                                <i class="fas fa-check-circle text-success fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="card-title text-muted mb-1">Completed</h6>
+                            <h2 class="mb-0 fw-bold text-success">{{ completed_tasks }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overdue Tasks Alert -->
+    {% if overdue_tasks > 0 %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-danger border-0 shadow-sm" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Attention!</strong> You have {{ overdue_tasks }} overdue task{{ overdue_tasks|pluralize }}.
+                    <a href="{% url 'tasks:task-list' %}?status=pending" class="alert-link ms-2">View all tasks</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quick Actions -->
+    {% if user.can_manage_tasks %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'tasks:task-create' %}" class="btn btn-primary w-100">
+                                <i class="fas fa-plus me-2"></i>Create Task
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'tasks:task-list' %}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-list me-2"></i>View All Tasks
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'tasks:task-list' %}?status=pending" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-clock me-2"></i>Pending Tasks
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'tasks:task-list' %}?status=in_progress" class="btn btn-outline-info w-100">
+                                <i class="fas fa-spinner me-2"></i>In Progress
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Tasks -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history text-secondary me-2"></i>Recent Tasks
+                    </h5>
+                    <a href="{% url 'tasks:task-list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    {% if recent_tasks %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Task</th>
+                                        <th>Category</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Assigned To</th>
+                                        <th>Due Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for task in recent_tasks %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1">
+                                                    <a href="{% url 'tasks:task-detail' task.pk %}" 
+                                                       class="dashboard-task-title"
+                                                       style="color: #212529 !important; font-weight: 600 !important; text-decoration: none !important; font-size: 1.1rem !important;">
+                                                        {{ task.title }}
+                                                    </a>
+                                                    <small class="dashboard-task-description d-block" 
+                                                           style="color: #6c757d !important; font-size: 0.875rem !important;">
+                                                        {{ task.description|truncatechars:50 }}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if task.category %}
+                                                <span class="badge category-badge rounded-pill" 
+                                                      style="background-color: {{ task.category.color|default:'#6c757d' }} !important; color: white !important; font-weight: 600 !important; padding: 0.5rem 1rem !important;">
+                                                    {{ task.category.name }}
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-secondary category-badge" 
+                                                      style="color: white !important; font-weight: 600 !important; padding: 0.5rem 1rem !important;">
+                                                    No Category
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if task.priority == 'urgent' %}
+                                                <span class="badge bg-danger" style="font-weight: 600 !important; padding: 0.5rem 1rem !important;">Urgent</span>
+                                            {% elif task.priority == 'high' %}
+                                                <span class="badge bg-warning" style="font-weight: 600 !important; padding: 0.5rem 1rem !important; color: #212529 !important;">High</span>
+                                            {% elif task.priority == 'medium' %}
+                                                <span class="badge bg-info" style="font-weight: 600 !important; padding: 0.5rem 1rem !important;">Medium</span>
+                                            {% else %}
+                                                <span class="badge bg-success" style="font-weight: 600 !important; padding: 0.5rem 1rem !important;">Low</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if task.status == 'completed' %}
+                                                <span class="badge bg-success" style="font-weight: 600 !important; padding: 0.5rem 1rem !important;">Completed</span>
+                                            {% elif task.status == 'in_progress' %}
+                                                <span class="badge bg-info" style="font-weight: 600 !important; padding: 0.5rem 1rem !important;">In Progress</span>
+                                            {% elif task.status == 'review' %}
+                                                <span class="badge bg-warning" style="font-weight: 600 !important; padding: 0.5rem 1rem !important; color: #212529 !important;">Review</span>
+                                            {% elif task.status == 'cancelled' %}
+                                                <span class="badge bg-secondary" style="font-weight: 600 !important; padding: 0.5rem 1rem !important;">Cancelled</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary" style="font-weight: 600 !important; padding: 0.5rem 1rem !important;">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if task.assigned_to %}
+                                                <span style="color: #495057 !important; font-weight: 500 !important;">
+                                                    {{ task.assigned_to.get_full_name|default:task.assigned_to.username }}
+                                                </span>
+                                            {% else %}
+                                                <span style="color: #6c757d !important; font-style: italic !important;">Unassigned</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if task.due_date %}
+                                                <span style="{% if task.is_overdue %}color: #dc3545 !important; font-weight: 600 !important;{% else %}color: #495057 !important; font-weight: 500 !important;{% endif %}">
+                                                    {{ task.due_date|date:"M d, Y" }}
+                                                </span>
+                                                {% if task.is_overdue %}
+                                                    <br><small style="color: #dc3545 !important; font-weight: 600 !important;">Overdue</small>
+                                                {% endif %}
+                                            {% else %}
+                                                <span style="color: #6c757d !important; font-style: italic !important;">No due date</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a href="{% url 'tasks:task-detail' task.pk %}" 
+                                                   class="btn btn-outline-primary btn-sm"
+                                                   style="border-color: #0d6efd !important; color: #0d6efd !important;">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                {% if task.can_edit %}
+                                                <a href="{% url 'tasks:task-update' task.pk %}" 
+                                                   class="btn btn-outline-warning btn-sm"
+                                                   style="border-color: #ffc107 !important; color: #ffc107 !important;">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No tasks yet</h5>
+                            <p class="text-muted">Get started by creating your first task!</p>
+                            {% if user.can_manage_tasks %}
+                                <a href="{% url 'tasks:task-create' %}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Create Task
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

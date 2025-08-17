@@ -1,0 +1,18 @@
+{% load i18n %}
+
+<div class="django-filter">
+    <h3>{% trans "Filter" %}</h3>
+    <form method="get">
+        {% for field in filter.form %}
+            <div class="field">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small class="help-text">{{ field.help_text }}</small>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="button">{% trans "Apply filters" %}</button>
+        <a href="?" class="button button-secondary">{% trans "Clear" %}</a>
+    </form>
+</div> 
