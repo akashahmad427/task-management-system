@@ -87,15 +87,18 @@ import os
 print(f"DEBUG: DATABASE_URL = {os.environ.get('DATABASE_URL', 'NOT SET')}")
 print(f"DEBUG: All environment variables: {list(os.environ.keys())}")
 
+# Force PostgreSQL if DATABASE_URL exists
 if os.environ.get('DATABASE_URL'):
     # Force PostgreSQL on Railway
     import dj_database_url
     DATABASES = {
         'default': dj_database_url.config(
             conn_max_age=600,
+            conn_health_checks=True,
         )
     }
     print("Using PostgreSQL database from DATABASE_URL")
+    print(f"Database config: {DATABASES['default']}")
 else:
     # Use SQLite for local development
     DATABASES = {

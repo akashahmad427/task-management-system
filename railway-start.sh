@@ -26,7 +26,17 @@ if [ -z "$DATABASE_URL" ]; then
 fi
 
 echo "DATABASE_URL is set, checking connection..."
+echo "DATABASE_URL value: $DATABASE_URL"
+echo "Testing database connection..."
+
+# Test the database connection explicitly
 python manage.py check --database default
+if [ $? -eq 0 ]; then
+    echo "Database connection successful!"
+else
+    echo "Database connection failed!"
+    exit 1
+fi
 
 # Run database migrations
 echo "Running database migrations..."
