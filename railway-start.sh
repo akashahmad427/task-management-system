@@ -5,6 +5,16 @@ echo "Starting Django application..."
 
 # Wait for database to be ready
 echo "Waiting for database connection..."
+echo "Checking database configuration..."
+
+# Check if DATABASE_URL is set
+if [ -z "$DATABASE_URL" ]; then
+    echo "ERROR: DATABASE_URL is not set!"
+    echo "Please add a PostgreSQL database to your Railway project."
+    exit 1
+fi
+
+echo "DATABASE_URL is set, checking connection..."
 python manage.py check --database default
 
 # Run database migrations

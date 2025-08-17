@@ -82,13 +82,27 @@ WSGI_APPLICATION = 'task_management_system.wsgi.application'
 
 # Use PostgreSQL if DATABASE_URL is available (Railway), otherwise SQLite for development
 import dj_database_url
+import os
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
-        conn_max_age=600
-    )
-}
+# Check if we're on Railway (production)
+if os.environ.get('RAILWAY_ENVIRONMENT') or os.environ.get('DATABASE_URL'):
+    # Force PostgreSQL on Railway
+    DATABASES = {
+        'default': dj_database_url.config(
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+    print("Using PostgreSQL database from DATABASE_URL")
+else:
+    # Use SQLite for local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+    print("Using SQLite database for local development")
 
 
 # Password validation
