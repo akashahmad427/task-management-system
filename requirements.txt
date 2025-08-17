@@ -135,3 +135,6 @@ xdg==5
 xkit==0.0.0
 yarl==1.8.2
 zipp==1.0.0
+gunicorn==21.2.0
+gunicorn==21.2.0
+python-decouple==3.8
