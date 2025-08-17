@@ -84,6 +84,9 @@ WSGI_APPLICATION = 'task_management_system.wsgi.application'
 import os
 
 # Check if we're on Railway (production)
+print(f"DEBUG: DATABASE_URL = {os.environ.get('DATABASE_URL', 'NOT SET')}")
+print(f"DEBUG: All environment variables: {list(os.environ.keys())}")
+
 if os.environ.get('DATABASE_URL'):
     # Force PostgreSQL on Railway
     import dj_database_url

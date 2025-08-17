@@ -11,6 +11,8 @@ echo "Checking database configuration..."
 echo "Environment variables:"
 echo "DATABASE_URL: $DATABASE_URL"
 echo "RAILWAY_ENVIRONMENT: $RAILWAY_ENVIRONMENT"
+echo "All environment variables:"
+env | sort
 
 # Check if DATABASE_URL is set
 if [ -z "$DATABASE_URL" ]; then
