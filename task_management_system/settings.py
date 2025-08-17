@@ -91,14 +91,36 @@ print(f"DEBUG: All environment variables: {list(os.environ.keys())}")
 if os.environ.get('DATABASE_URL'):
     # Force PostgreSQL on Railway
     import dj_database_url
-    DATABASES = {
-        'default': dj_database_url.config(
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
-    print("Using PostgreSQL database from DATABASE_URL")
-    print(f"Database config: {DATABASES['default']}")
+    
+    # Parse the DATABASE_URL
+    db_url = os.environ.get('DATABASE_URL')
+    print(f"Parsing DATABASE_URL: {db_url}")
+    
+    # Manually configure PostgreSQL to avoid any issues
+    if db_url.startswith('postgresql://'):
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': db_url.split('/')[-1].split('?')[0],
+                'USER': db_url.split('://')[1].split(':')[0],
+                'PASSWORD': db_url.split(':')[2].split('@')[0],
+                'HOST': db_url.split('@')[1].split(':')[0],
+                'PORT': db_url.split('@')[1].split(':')[1].split('/')[0],
+                'CONN_MAX_AGE': 600,
+            }
+        }
+        print("Manually configured PostgreSQL database")
+        print(f"Database config: {DATABASES['default']}")
+    else:
+        # Fallback to dj_database_url
+        DATABASES = {
+            'default': dj_database_url.config(
+                conn_max_age=600,
+                conn_health_checks=True,
+            )
+        }
+        print("Using dj_database_url fallback")
+        print(f"Database config: {DATABASES['default']}")
 else:
     # Use SQLite for local development
     DATABASES = {
