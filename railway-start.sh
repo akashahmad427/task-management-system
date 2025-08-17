@@ -7,10 +7,19 @@ echo "Starting Django application..."
 echo "Waiting for database connection..."
 echo "Checking database configuration..."
 
+# Debug environment variables
+echo "Environment variables:"
+echo "DATABASE_URL: $DATABASE_URL"
+echo "RAILWAY_ENVIRONMENT: $RAILWAY_ENVIRONMENT"
+
 # Check if DATABASE_URL is set
 if [ -z "$DATABASE_URL" ]; then
     echo "ERROR: DATABASE_URL is not set!"
     echo "Please add a PostgreSQL database to your Railway project."
+    echo "Steps:"
+    echo "1. Go to Railway dashboard"
+    echo "2. Click 'New' -> 'Database' -> 'PostgreSQL'"
+    echo "3. Add it to your project"
     exit 1
 fi
 

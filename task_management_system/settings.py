@@ -81,16 +81,15 @@ WSGI_APPLICATION = 'task_management_system.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Use PostgreSQL if DATABASE_URL is available (Railway), otherwise SQLite for development
-import dj_database_url
 import os
 
 # Check if we're on Railway (production)
-if os.environ.get('RAILWAY_ENVIRONMENT') or os.environ.get('DATABASE_URL'):
+if os.environ.get('DATABASE_URL'):
     # Force PostgreSQL on Railway
+    import dj_database_url
     DATABASES = {
         'default': dj_database_url.config(
             conn_max_age=600,
-            conn_health_checks=True,
         )
     }
     print("Using PostgreSQL database from DATABASE_URL")
