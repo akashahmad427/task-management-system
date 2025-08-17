@@ -1,1 +1,1 @@
-web: gunicorn task_management_system.wsgi:application 
+web: bash railway-start.sh 
