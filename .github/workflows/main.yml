@@ -1,0 +1,20 @@
+name: testing the workflow first time
+
+on: 
+   push:
+         branches:
+             - main
+env:
+  name: Akash-Ahmad
+
+jobs:
+    deploy:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
+        - name: Here is my Name
+          run: echo "Hello, my name is $name Fab!"
+        
